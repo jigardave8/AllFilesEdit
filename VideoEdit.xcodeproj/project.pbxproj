@@ -11,6 +11,7 @@
 		B714BAE22ACA32CB00EB7F77 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B714BAE12ACA32CB00EB7F77 /* ContentView.swift */; };
 		B714BAE42ACA32CF00EB7F77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B714BAE32ACA32CF00EB7F77 /* Assets.xcassets */; };
 		B714BAE82ACA32CF00EB7F77 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B714BAE72ACA32CF00EB7F77 /* Preview Assets.xcassets */; };
+		B714BAF22ACA33C000EB7F77 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BAEF2ACA33C000EB7F77 /* QuickLook.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,10 @@
 		B714BAE32ACA32CF00EB7F77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B714BAE52ACA32CF00EB7F77 /* VideoEdit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VideoEdit.entitlements; sourceTree = "<group>"; };
 		B714BAE72ACA32CF00EB7F77 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B714BAEF2ACA33C000EB7F77 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/QuickLook.framework; sourceTree = DEVELOPER_DIR; };
+		B714BAF02ACA33C000EB7F77 /* QuickLookThumbnailing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookThumbnailing.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/QuickLookThumbnailing.framework; sourceTree = DEVELOPER_DIR; };
+		B714BAF12ACA33C000EB7F77 /* QuickLookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookUI.framework; path = System/Library/Frameworks/QuickLookUI.framework; sourceTree = SDKROOT; };
+		B714BAF52ACA347300EB7F77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B714BAF22ACA33C000EB7F77 /* QuickLook.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +44,7 @@
 			children = (
 				B714BADE2ACA32CB00EB7F77 /* VideoEdit */,
 				B714BADD2ACA32CB00EB7F77 /* Products */,
+				B714BAEE2ACA33BF00EB7F77 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -52,6 +59,7 @@
 		B714BADE2ACA32CB00EB7F77 /* VideoEdit */ = {
 			isa = PBXGroup;
 			children = (
+				B714BAF52ACA347300EB7F77 /* Info.plist */,
 				B714BADF2ACA32CB00EB7F77 /* VideoEditApp.swift */,
 				B714BAE12ACA32CB00EB7F77 /* ContentView.swift */,
 				B714BAE32ACA32CF00EB7F77 /* Assets.xcassets */,
@@ -67,6 +75,16 @@
 				B714BAE72ACA32CF00EB7F77 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B714BAEE2ACA33BF00EB7F77 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B714BAEF2ACA33C000EB7F77 /* QuickLook.framework */,
+				B714BAF02ACA33C000EB7F77 /* QuickLookThumbnailing.framework */,
+				B714BAF12ACA33C000EB7F77 /* QuickLookUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -272,8 +290,13 @@
 				DEVELOPMENT_ASSET_PATHS = "\"VideoEdit/Preview Content\"";
 				DEVELOPMENT_TEAM = 3G46N5JLN2;
 				ENABLE_HARDENED_RUNTIME = YES;
+				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VideoEdit/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSFileProviderDomainUsageDescription = "We need access to your files for XYZ functionality";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library for XYZ functionality";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -310,8 +333,13 @@
 				DEVELOPMENT_ASSET_PATHS = "\"VideoEdit/Preview Content\"";
 				DEVELOPMENT_TEAM = 3G46N5JLN2;
 				ENABLE_HARDENED_RUNTIME = YES;
+				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VideoEdit/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSFileProviderDomainUsageDescription = "We need access to your files for XYZ functionality";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library for XYZ functionality";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
