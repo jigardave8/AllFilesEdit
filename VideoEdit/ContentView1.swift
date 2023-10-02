@@ -114,7 +114,45 @@ struct ContentView1: View {
     var body: some View {
         NavigationView {
             VStack {
-                // Top half for music player controls
+               
+
+                //  panel for user's media library
+                VStack {
+                    Text("Media Library")
+                        .font(.headline)
+                        .padding()
+                    List {
+                        ForEach(libraryViewModel.songs, id: \.persistentID) { song in
+                            Button(action: {
+                                libraryViewModel.selectedSong = song
+                                audioPlayerManager.play(song: song)
+                            }) {
+                                HStack {
+                                    Text(song.title ?? "Unknown Title")
+                                        .foregroundColor(song == libraryViewModel.selectedSong ? .blue : .black)
+                                    Spacer()
+                                    if song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying {
+                                        Image(systemName: "speaker.wave.2.fill")
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                                .padding(2)
+                                .background(song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying ? Color.yellow : Color.white)
+                            }
+                        }
+                    }
+                    .onAppear {
+                        _ = libraryViewModel.$songs
+                            .sink { _ in
+                                // Handle songs change
+                            }
+
+                        // Fetch songs
+                        libraryViewModel.fetchSongs()
+                    }
+                }
+                
+                //  music player controls
                 VStack {
                     HStack {
                         Button(action: {
@@ -171,42 +209,6 @@ struct ContentView1: View {
                                 .background(Color.white)
                                 .cornerRadius(25)
                         }
-                    }
-                }
-
-                // Side panel for user's media library
-                VStack {
-                    Text("Media Library")
-                        .font(.headline)
-                        .padding()
-                    List {
-                        ForEach(libraryViewModel.songs, id: \.persistentID) { song in
-                            Button(action: {
-                                libraryViewModel.selectedSong = song
-                                audioPlayerManager.play(song: song)
-                            }) {
-                                HStack {
-                                    Text(song.title ?? "Unknown Title")
-                                        .foregroundColor(song == libraryViewModel.selectedSong ? .blue : .black)
-                                    Spacer()
-                                    if song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying {
-                                        Image(systemName: "speaker.wave.2.fill")
-                                            .foregroundColor(.green)
-                                    }
-                                }
-                                .padding(2)
-                                .background(song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying ? Color.yellow : Color.white)
-                            }
-                        }
-                    }
-                    .onAppear {
-                        _ = libraryViewModel.$songs
-                            .sink { _ in
-                                // Handle songs change
-                            }
-
-                        // Fetch songs
-                        libraryViewModel.fetchSongs()
                     }
                 }
             }
