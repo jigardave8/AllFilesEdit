@@ -50,6 +50,13 @@ class AudioPlayerManager: NSObject, ObservableObject {
         }
         isPlaying.toggle()
     }
+    
+    func Stop() {
+        if isPlaying {
+            audioPlayer?.stop()
+        }
+        isPlaying.toggle()
+    }
 }
 
 extension AudioPlayerManager: AVAudioPlayerDelegate {
@@ -58,13 +65,59 @@ extension AudioPlayerManager: AVAudioPlayerDelegate {
     }
 }
 
+
 struct LibraryView: View {
     @ObservedObject var libraryViewModel = LibraryViewModel()
     @ObservedObject var audioPlayerManager = AudioPlayerManager()
 
     var body: some View {
         NavigationView {
-            HStack(spacing: 0) {
+            VStack {
+                // Top half for music player controls
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            // Shuffle action
+                        }) {
+                            Image(systemName: "shuffle")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(25)
+                        }
+                        Spacer()
+                        Button(action: {
+                            audioPlayerManager.togglePlayPause()
+                        }) {
+                            Image(systemName: audioPlayerManager.isPlaying ? "pause.circle" : "play.circle")
+                                .resizable()
+                                .frame(width: 70, height: 70)
+                                .padding()
+                                .background(Color.green)
+                                .cornerRadius(35)
+                        }
+                        Spacer()
+                        Button(action: {
+                            // Stop action
+                            audioPlayerManager.Stop()
+
+                        }) {
+                            Image(systemName: "stop.circle")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .padding()
+                                .background(Color.red)
+                                .cornerRadius(25)
+                        }
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                
+                // Bottom half for user's media library
                 List(libraryViewModel.songs, id: \.persistentID) { song in
                     Button(action: {
                         libraryViewModel.selectedSong = song
@@ -73,31 +126,34 @@ struct LibraryView: View {
                         Text(song.title ?? "Unknown Title")
                     }
                 }
-                .frame(width: 200)
                 .onAppear {
                     libraryViewModel.fetchSongs()
                 }
                 .navigationBarTitle("Music Library")
-
-                // Fancy media control view
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            audioPlayerManager.togglePlayPause()
-                        }) {
-                            Image(systemName: audioPlayerManager.isPlaying ? "pause.circle" : "play.circle")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.blue)
-                        }
-                        Spacer()
+            }
+            .navigationBarItems(trailing:
+                HStack {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gear")
+                            .padding()
+                    }
+                    Button(action: {
+                        // Funky button action
+                    }) {
+                        Image(systemName: "star.fill")
+                            .padding()
                     }
                 }
-                .padding()
-            }
+            )
         }
+    }
+}
+
+struct SettingsView: View {
+    var body: some View {
+        // Add settings content here
+        Text("Settings View")
+            .navigationBarTitle("Settings")
     }
 }
 
@@ -106,4 +162,3 @@ struct ContentView1: View {
         LibraryView()
     }
 }
-
