@@ -30,8 +30,30 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     @Published var isPlaying: Bool = false
     @Published var audioLevels: Float = 0.0
+    @Published var showSettings: Bool = false
     var audioPlayer: AVAudioPlayer?
     var currentIndex: Int = 0
+
+    // Equalizer settings
+    enum EqualizerSetting: String, CaseIterable {
+        
+        case normal = "Normal"
+        case rock = "Rock"
+        case pop = "Pop"
+        case jazz = "Jazz"
+        case bass = "Bass"
+        case treble = "Treble"
+        case bassAndTreble = "Bass & Treble"
+        case classical = "Classical"
+        case hipHop = "Hip-Hop"
+        case reset = "Reset"
+    }
+
+    @Published var currentEqualizerSetting: EqualizerSetting = .normal {
+        didSet {
+            applyEqualizerSetting()
+        }
+    }
 
     func play(song: MPMediaItem) {
         guard let url = song.assetURL else { return }
@@ -46,6 +68,9 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
             // Set selected song index
             currentIndex = LibraryViewModel.shared.songs.firstIndex(of: song) ?? 0
+
+            // Apply equalizer settings when a new song starts playing
+            applyEqualizerSetting()
         } catch {
             print("Error initializing audio player: \(error.localizedDescription)")
         }
@@ -105,6 +130,55 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         currentIndex = 0
         play(song: LibraryViewModel.shared.songs[currentIndex])
     }
+
+    private func applyEqualizerSetting() {
+        guard let audioPlayer = audioPlayer else { return }
+
+        // Reset equalizer settings
+        audioPlayer.updateMeters()
+        audioPlayer.enableRate = false
+        audioPlayer.rate = 1.0
+
+        switch currentEqualizerSetting {
+        case .normal:
+            // Apply normal equalizer settings
+            break
+        case .rock:
+            // Apply rock equalizer settings
+            audioPlayer.enableRate = true
+            audioPlayer.rate = 1.1
+        case .pop:
+            // Apply pop equalizer settings
+            audioPlayer.enableRate = true
+            audioPlayer.rate = 1.2
+        case .jazz:
+            // Apply jazz equalizer settings
+            audioPlayer.enableRate = true
+            audioPlayer.rate = 1.3
+        case .bass:
+            // Apply bass equalizer settings
+            audioPlayer.enableRate = true
+            audioPlayer.rate = 1.2
+        case .treble:
+            // Apply treble equalizer settings
+            audioPlayer.enableRate = true
+            audioPlayer.rate = 0.8
+        case .bassAndTreble:
+            // Apply bass and treble equalizer settings
+            audioPlayer.enableRate = true
+            audioPlayer.rate = 1.5
+        case .classical:
+            // Apply classical equalizer settings
+            break
+        case .hipHop:
+            // Apply hip-hop equalizer settings
+            break
+        case .reset:
+            // Reset equalizer settings
+            audioPlayer.enableRate = false
+            audioPlayer.rate = 1.0
+        }
+    }
 }
 
 struct ContentView1: View {
@@ -114,9 +188,7 @@ struct ContentView1: View {
     var body: some View {
         NavigationView {
             VStack {
-               
-
-                //  panel for user's media library
+                // panel for user's media library
                 VStack {
                     Text("Media Library")
                         .font(.headline)
@@ -151,8 +223,8 @@ struct ContentView1: View {
                         libraryViewModel.fetchSongs()
                     }
                 }
-                
-                //  music player controls
+
+                // music player controls
                 VStack {
                     HStack {
                         Button(action: {
@@ -228,15 +300,47 @@ struct ContentView1: View {
             )
         }
         .onAppear {
+            // Set up the audio session for background playing
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+                print("Failed to configure audio session:", error.localizedDescription)
+            }
+
             // Set the audio player manager as the delegate
             audioPlayerManager.audioPlayer?.delegate = audioPlayerManager
+        }
+        .sheet(isPresented: $audioPlayerManager.showSettings) {
+            SettingsView()
         }
     }
 }
 
 struct SettingsView: View {
+    @ObservedObject var audioPlayerManager = AudioPlayerManager.shared
+
     var body: some View {
-        Text("Settings View")
+        NavigationView {
+            List {
+                Section(header: Text("Equalizer Settings")) {
+                    ForEach(AudioPlayerManager.EqualizerSetting.allCases, id: \.self) { option in
+                        Button(action: {
+                            audioPlayerManager.currentEqualizerSetting = option
+                        }) {
+                            HStack {
+                                Text(option.rawValue)
+                                Spacer()
+                                if audioPlayerManager.currentEqualizerSetting == option {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             .navigationBarTitle("Settings")
+        }
     }
 }
+
