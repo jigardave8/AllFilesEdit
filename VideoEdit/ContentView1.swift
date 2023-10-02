@@ -12,6 +12,8 @@ import AVFoundation
 import Combine
 
 class LibraryViewModel: ObservableObject {
+    static let shared = LibraryViewModel()
+
     @Published var songs: [MPMediaItem] = []
     @Published var selectedSong: MPMediaItem?
 
@@ -29,6 +31,7 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var isPlaying: Bool = false
     @Published var audioLevels: Float = 0.0
     var audioPlayer: AVAudioPlayer?
+    var currentIndex: Int = 0
 
     func play(song: MPMediaItem) {
         guard let url = song.assetURL else { return }
@@ -40,6 +43,9 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
             isPlaying = true
+
+            // Set selected song index
+            currentIndex = LibraryViewModel.shared.songs.firstIndex(of: song) ?? 0
         } catch {
             print("Error initializing audio player: \(error.localizedDescription)")
         }
@@ -64,6 +70,7 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         isPlaying = false
+        playNext()
     }
 
     func updateAudioLevels() {
@@ -74,26 +81,59 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         audioPlayer.updateMeters()
         audioLevels = audioPlayer.averagePower(forChannel: 0) / -160.0
     }
+
+    func playNext() {
+        if LibraryViewModel.shared.songs.isEmpty {
+            return
+        }
+
+        currentIndex = (currentIndex + 1) % LibraryViewModel.shared.songs.count
+        play(song: LibraryViewModel.shared.songs[currentIndex])
+    }
+
+    func playPrevious() {
+        if LibraryViewModel.shared.songs.isEmpty {
+            return
+        }
+
+        currentIndex = (currentIndex - 1 + LibraryViewModel.shared.songs.count) % LibraryViewModel.shared.songs.count
+        play(song: LibraryViewModel.shared.songs[currentIndex])
+    }
+
+    func shuffle() {
+        LibraryViewModel.shared.songs.shuffle()
+        currentIndex = 0
+        play(song: LibraryViewModel.shared.songs[currentIndex])
+    }
 }
 
 struct ContentView1: View {
-    @ObservedObject var libraryViewModel = LibraryViewModel()
-    @ObservedObject var audioPlayerManager = AudioPlayerManager()
+    @ObservedObject var libraryViewModel = LibraryViewModel.shared
+    @ObservedObject var audioPlayerManager = AudioPlayerManager.shared
 
     var body: some View {
         NavigationView {
             VStack {
                 // Top half for music player controls
                 VStack {
-                    Spacer()
                     HStack {
-                        Spacer()
                         Button(action: {
-                            // Shuffle action
+                            audioPlayerManager.shuffle()
                         }) {
                             Image(systemName: "shuffle")
                                 .resizable()
-                                .frame(width: 50, height: 50)
+                                .frame(width: 20, height: 20)
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(25)
+                        }
+                        Spacer()
+                        Button(action: {
+                            audioPlayerManager.playPrevious()
+                        }) {
+                            Image(systemName: "backward.fill")
+                                .resizable()
+                                .frame(width: 20, height: 20)
                                 .padding()
                                 .background(Color.white)
                                 .cornerRadius(25)
@@ -104,61 +144,71 @@ struct ContentView1: View {
                         }) {
                             Image(systemName: audioPlayerManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                                 .resizable()
-                                .frame(width: 70, height: 70)
+                                .frame(width: 30, height: 30)
                                 .padding()
                                 .background(Color.green)
                                 .cornerRadius(35)
                         }
                         Spacer()
                         Button(action: {
-                            // Stop action
-                            audioPlayerManager.stop()
+                            audioPlayerManager.playNext()
                         }) {
-                            Image(systemName: "stop.circle.fill")
+                            Image(systemName: "forward.fill")
                                 .resizable()
-                                .frame(width: 50, height: 50)
+                                .frame(width: 20, height: 20)
                                 .padding()
                                 .background(Color.white)
                                 .cornerRadius(25)
                         }
                         Spacer()
-                    }
-                    Spacer()
-                }
-
-                // Bottom half for user's media library
-                List {
-                    ForEach(libraryViewModel.songs, id: \.persistentID) { song in
                         Button(action: {
-                            libraryViewModel.selectedSong = song
-                            audioPlayerManager.play(song: song)
+                            audioPlayerManager.stop()
                         }) {
-                            HStack {
-                                Text(song.title ?? "Unknown Title")
-                                    .foregroundColor(song == libraryViewModel.selectedSong ? .blue : .black)
-                                Spacer()
-                                if song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying {
-                                    Image(systemName: "speaker.wave.2.fill")
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            .padding(8)
+                            Image(systemName: "stop.fill")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(25)
                         }
                     }
                 }
-                .onAppear {
-                    _ = libraryViewModel.$songs
-                        .sink { _ in
-                            // Handle songs change
+
+                // Side panel for user's media library
+                VStack {
+                    Text("Media Library")
+                        .font(.headline)
+                        .padding()
+                    List {
+                        ForEach(libraryViewModel.songs, id: \.persistentID) { song in
+                            Button(action: {
+                                libraryViewModel.selectedSong = song
+                                audioPlayerManager.play(song: song)
+                            }) {
+                                HStack {
+                                    Text(song.title ?? "Unknown Title")
+                                        .foregroundColor(song == libraryViewModel.selectedSong ? .blue : .black)
+                                    Spacer()
+                                    if song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying {
+                                        Image(systemName: "speaker.wave.2.fill")
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                                .padding(2)
+                                .background(song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying ? Color.yellow : Color.white)
+                            }
                         }
+                    }
+                    .onAppear {
+                        _ = libraryViewModel.$songs
+                            .sink { _ in
+                                // Handle songs change
+                            }
 
-                    // Fetch songs
-                    libraryViewModel.fetchSongs()
+                        // Fetch songs
+                        libraryViewModel.fetchSongs()
+                    }
                 }
-                .background(Color.red) // Add background color
-
-                // Waveform view
-                WaveformView(audioPlayerManager: audioPlayerManager)
             }
             .navigationBarItems(trailing:
                 HStack {
@@ -184,23 +234,7 @@ struct ContentView1: View {
 
 struct SettingsView: View {
     var body: some View {
-        // Add settings content here
         Text("Settings View")
             .navigationBarTitle("Settings")
     }
 }
-
-struct WaveformView: View {
-    @ObservedObject var audioPlayerManager: AudioPlayerManager
-
-    var body: some View {
-        HStack(spacing: 5) {
-            ForEach(0..<10) { _ in
-                Rectangle()
-                    .frame(width: 10, height: CGFloat(audioPlayerManager.audioLevels * 100))
-                    .foregroundColor(.red)
-            }
-        }
-    }
-}
-
