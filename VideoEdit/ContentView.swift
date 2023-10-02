@@ -11,40 +11,43 @@ import QuickLook
 
 struct ContentView: View {
     @State private var selectedURL: URL?
-    @State private var isImagePickerPresented: Bool = false
     @State private var isDocumentPickerPresented: Bool = false
 
     var body: some View {
-        VStack {
-            if let url = selectedURL {
-                FileViewer(url: url)
-            } else {
-                Button("Select Photo or File") {
-                    isImagePickerPresented.toggle()
-                }
-                .padding()
-                .fileImporter(
-                    isPresented: $isDocumentPickerPresented,
-                    allowedContentTypes: [UTType.data],
-                    onCompletion: { result in
-                        do {
-                            selectedURL = try result.get() as? URL
-                        } catch {
-                            print("Error importing document: \(error)")
+        NavigationView {
+            VStack {
+                if let selectedURL = selectedURL {
+                    FileViewer(url: selectedURL)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Cancel") {
+                                    self.selectedURL = nil
+                                }
+                            }
                         }
+                } else {
+                    Button("Select Photo or File") {
+                        isDocumentPickerPresented.toggle()
                     }
-                )
-
-                .onChange(of: isImagePickerPresented) { newValue in
-                    if newValue {
-                        isDocumentPickerPresented = true
-                    }
+                    .padding()
+                    .fileImporter(
+                        isPresented: $isDocumentPickerPresented,
+                        allowedContentTypes: [UTType.image, UTType.pdf],
+                        onCompletion: { result in
+                            do {
+                                selectedURL = try result.get()
+                            } catch {
+                                print("Error importing document: \(error)")
+                            }
+                        }
+                    )
                 }
             }
+            .navigationTitle("File Viewer")
         }
-        .navigationTitle("File Viewer")
     }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
