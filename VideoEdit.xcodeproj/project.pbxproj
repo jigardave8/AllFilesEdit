@@ -13,7 +13,6 @@
 		B714BAE82ACA32CF00EB7F77 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B714BAE72ACA32CF00EB7F77 /* Preview Assets.xcassets */; };
 		B714BAF22ACA33C000EB7F77 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BAEF2ACA33C000EB7F77 /* QuickLook.framework */; };
 		B714BAF72ACA4B0600EB7F77 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BAF62ACA4B0600EB7F77 /* AVFoundation.framework */; };
-		B714BAFD2ACA63F900EB7F77 /* ContentView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = B714BAFC2ACA63F900EB7F77 /* ContentView1.swift */; };
 		B714BAFF2ACA65B600EB7F77 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BAFE2ACA65B600EB7F77 /* CoreAudio.framework */; };
 		B714BB012ACA65C700EB7F77 /* MusicKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BB002ACA65C700EB7F77 /* MusicKit.framework */; };
 		B714BB032ACA65D200EB7F77 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BB022ACA65D200EB7F77 /* CoreMedia.framework */; };
@@ -34,7 +33,6 @@
 		B714BAF52ACA347300EB7F77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B714BAF62ACA4B0600EB7F77 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		B714BAFA2ACA54DB00EB7F77 /* CoreAudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/CoreAudioKit.framework; sourceTree = DEVELOPER_DIR; };
-		B714BAFC2ACA63F900EB7F77 /* ContentView1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView1.swift; sourceTree = "<group>"; };
 		B714BAFE2ACA65B600EB7F77 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/CoreAudio.framework; sourceTree = DEVELOPER_DIR; };
 		B714BB002ACA65C700EB7F77 /* MusicKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MusicKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/MusicKit.framework; sourceTree = DEVELOPER_DIR; };
 		B714BB022ACA65D200EB7F77 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
@@ -83,7 +81,6 @@
 				B714BAF52ACA347300EB7F77 /* Info.plist */,
 				B714BADF2ACA32CB00EB7F77 /* VideoEditApp.swift */,
 				B714BAE12ACA32CB00EB7F77 /* ContentView.swift */,
-				B714BAFC2ACA63F900EB7F77 /* ContentView1.swift */,
 				B714BAE32ACA32CF00EB7F77 /* Assets.xcassets */,
 				B714BAE52ACA32CF00EB7F77 /* VideoEdit.entitlements */,
 				B714BAE62ACA32CF00EB7F77 /* Preview Content */,
@@ -186,7 +183,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B714BAFD2ACA63F900EB7F77 /* ContentView1.swift in Sources */,
 				B714BAE22ACA32CB00EB7F77 /* ContentView.swift in Sources */,
 				B714BAE02ACA32CB00EB7F77 /* VideoEditApp.swift in Sources */,
 			);
