@@ -12,6 +12,7 @@
 		B714BAE42ACA32CF00EB7F77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B714BAE32ACA32CF00EB7F77 /* Assets.xcassets */; };
 		B714BAE82ACA32CF00EB7F77 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B714BAE72ACA32CF00EB7F77 /* Preview Assets.xcassets */; };
 		B714BAF22ACA33C000EB7F77 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BAEF2ACA33C000EB7F77 /* QuickLook.framework */; };
+		B714BAF72ACA4B0600EB7F77 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B714BAF62ACA4B0600EB7F77 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		B714BAF02ACA33C000EB7F77 /* QuickLookThumbnailing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookThumbnailing.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/QuickLookThumbnailing.framework; sourceTree = DEVELOPER_DIR; };
 		B714BAF12ACA33C000EB7F77 /* QuickLookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookUI.framework; path = System/Library/Frameworks/QuickLookUI.framework; sourceTree = SDKROOT; };
 		B714BAF52ACA347300EB7F77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B714BAF62ACA4B0600EB7F77 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B714BAF72ACA4B0600EB7F77 /* AVFoundation.framework in Frameworks */,
 				B714BAF22ACA33C000EB7F77 /* QuickLook.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -80,6 +83,7 @@
 		B714BAEE2ACA33BF00EB7F77 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B714BAF62ACA4B0600EB7F77 /* AVFoundation.framework */,
 				B714BAEF2ACA33C000EB7F77 /* QuickLook.framework */,
 				B714BAF02ACA33C000EB7F77 /* QuickLookThumbnailing.framework */,
 				B714BAF12ACA33C000EB7F77 /* QuickLookUI.framework */,

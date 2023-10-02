@@ -8,6 +8,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import QuickLook
+import AVFoundation
 
 struct ContentView: View {
     @State private var selectedURL: URL?
@@ -32,7 +33,7 @@ struct ContentView: View {
                     .padding()
                     .fileImporter(
                         isPresented: $isDocumentPickerPresented,
-                        allowedContentTypes: [UTType.image, UTType.pdf],
+                        allowedContentTypes: [UTType.audio],
                         onCompletion: { result in
                             do {
                                 selectedURL = try result.get()
@@ -48,7 +49,6 @@ struct ContentView: View {
     }
 }
 
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
@@ -57,9 +57,49 @@ struct ContentView_Previews: PreviewProvider {
 
 struct FileViewer: View {
     let url: URL
+    @State private var audioPlayer: AVAudioPlayer?
 
     var body: some View {
-        QuickLookView(url: url)
+        VStack {
+            if UTType(url.pathExtension)?.conforms(to: .audio) == true {
+                HStack {
+                    Button("Play") {
+                        playAudio()
+                    }
+
+                    Button("Pause") {
+                        audioPlayer?.pause()
+                    }
+
+                    Button("Stop") {
+                        stopAudio()
+                    }
+                }
+                .padding()
+
+                if let audioPlayer = audioPlayer {
+                    Text("Duration: \(audioPlayer.duration)")
+                    Text("Current Time: \(audioPlayer.currentTime)")
+                }
+            } else {
+                // Display other file types
+                QuickLookView(url: url)
+            }
+        }
+    }
+
+    private func playAudio() {
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("Error playing audio: \(error)")
+        }
+    }
+
+    private func stopAudio() {
+        audioPlayer?.stop()
+        audioPlayer = nil
     }
 }
 
