@@ -9,6 +9,7 @@
 import SwiftUI
 import MediaPlayer
 import AVFoundation
+import Combine
 
 class LibraryViewModel: ObservableObject {
     @Published var songs: [MPMediaItem] = []
@@ -22,19 +23,21 @@ class LibraryViewModel: ObservableObject {
     }
 }
 
-class AudioPlayerManager: NSObject, ObservableObject {
+class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     static let shared = AudioPlayerManager()
-    
-    private var audioPlayer: AVAudioPlayer?
 
     @Published var isPlaying: Bool = false
+    @Published var audioLevels: Float = 0.0
+    var audioPlayer: AVAudioPlayer?
 
     func play(song: MPMediaItem) {
         guard let url = song.assetURL else { return }
-        
+
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.delegate = self
+            audioPlayer?.isMeteringEnabled = true
+            audioPlayer?.prepareToPlay()
             audioPlayer?.play()
             isPlaying = true
         } catch {
@@ -50,23 +53,30 @@ class AudioPlayerManager: NSObject, ObservableObject {
         }
         isPlaying.toggle()
     }
-    
-    func Stop() {
+
+    func stop() {
         if isPlaying {
             audioPlayer?.stop()
+            audioPlayer = nil
+            isPlaying.toggle()
         }
-        isPlaying.toggle()
     }
-}
 
-extension AudioPlayerManager: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         isPlaying = false
     }
+
+    func updateAudioLevels() {
+        guard let audioPlayer = audioPlayer else {
+            return
+        }
+
+        audioPlayer.updateMeters()
+        audioLevels = audioPlayer.averagePower(forChannel: 0) / -160.0
+    }
 }
 
-
-struct LibraryView: View {
+struct ContentView1: View {
     @ObservedObject var libraryViewModel = LibraryViewModel()
     @ObservedObject var audioPlayerManager = AudioPlayerManager()
 
@@ -75,7 +85,7 @@ struct LibraryView: View {
             VStack {
                 // Top half for music player controls
                 VStack {
-//                    Spacer()
+                    Spacer()
                     HStack {
                         Spacer()
                         Button(action: {
@@ -92,20 +102,19 @@ struct LibraryView: View {
                         Button(action: {
                             audioPlayerManager.togglePlayPause()
                         }) {
-                            Image(systemName: audioPlayerManager.isPlaying ? "pause.circle" : "play.circle")
+                            Image(systemName: audioPlayerManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                                 .resizable()
                                 .frame(width: 70, height: 70)
                                 .padding()
-                                .background(Color.white)
+                                .background(Color.green)
                                 .cornerRadius(35)
                         }
                         Spacer()
                         Button(action: {
                             // Stop action
-                            audioPlayerManager.Stop()
-
+                            audioPlayerManager.stop()
                         }) {
-                            Image(systemName: "stop.circle")
+                            Image(systemName: "stop.circle.fill")
                                 .resizable()
                                 .frame(width: 50, height: 50)
                                 .padding()
@@ -114,22 +123,42 @@ struct LibraryView: View {
                         }
                         Spacer()
                     }
-//                    Spacer()
+                    Spacer()
                 }
-                
+
                 // Bottom half for user's media library
-                List(libraryViewModel.songs, id: \.persistentID) { song in
-                    Button(action: {
-                        libraryViewModel.selectedSong = song
-                        audioPlayerManager.play(song: song)
-                    }) {
-                        Text(song.title ?? "Unknown Title")
+                List {
+                    ForEach(libraryViewModel.songs, id: \.persistentID) { song in
+                        Button(action: {
+                            libraryViewModel.selectedSong = song
+                            audioPlayerManager.play(song: song)
+                        }) {
+                            HStack {
+                                Text(song.title ?? "Unknown Title")
+                                    .foregroundColor(song == libraryViewModel.selectedSong ? .blue : .black)
+                                Spacer()
+                                if song == libraryViewModel.selectedSong && audioPlayerManager.isPlaying {
+                                    Image(systemName: "speaker.wave.2.fill")
+                                        .foregroundColor(.green)
+                                }
+                            }
+                            .padding(8)
+                        }
                     }
                 }
                 .onAppear {
+                    _ = libraryViewModel.$songs
+                        .sink { _ in
+                            // Handle songs change
+                        }
+
+                    // Fetch songs
                     libraryViewModel.fetchSongs()
                 }
-                .navigationBarTitle("Music Library")
+                .background(Color.red) // Add background color
+
+                // Waveform view
+                WaveformView(audioPlayerManager: audioPlayerManager)
             }
             .navigationBarItems(trailing:
                 HStack {
@@ -146,6 +175,10 @@ struct LibraryView: View {
                 }
             )
         }
+        .onAppear {
+            // Set the audio player manager as the delegate
+            audioPlayerManager.audioPlayer?.delegate = audioPlayerManager
+        }
     }
 }
 
@@ -157,8 +190,17 @@ struct SettingsView: View {
     }
 }
 
-struct ContentView1: View {
+struct WaveformView: View {
+    @ObservedObject var audioPlayerManager: AudioPlayerManager
+
     var body: some View {
-        LibraryView()
+        HStack(spacing: 5) {
+            ForEach(0..<10) { _ in
+                Rectangle()
+                    .frame(width: 10, height: CGFloat(audioPlayerManager.audioLevels * 100))
+                    .foregroundColor(.red)
+            }
+        }
     }
 }
+
