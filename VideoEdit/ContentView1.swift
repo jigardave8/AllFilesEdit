@@ -75,7 +75,7 @@ struct LibraryView: View {
             VStack {
                 // Top half for music player controls
                 VStack {
-                    Spacer()
+//                    Spacer()
                     HStack {
                         Spacer()
                         Button(action: {
@@ -85,7 +85,7 @@ struct LibraryView: View {
                                 .resizable()
                                 .frame(width: 50, height: 50)
                                 .padding()
-                                .background(Color.blue)
+                                .background(Color.white)
                                 .cornerRadius(25)
                         }
                         Spacer()
@@ -96,7 +96,7 @@ struct LibraryView: View {
                                 .resizable()
                                 .frame(width: 70, height: 70)
                                 .padding()
-                                .background(Color.green)
+                                .background(Color.white)
                                 .cornerRadius(35)
                         }
                         Spacer()
@@ -109,12 +109,12 @@ struct LibraryView: View {
                                 .resizable()
                                 .frame(width: 50, height: 50)
                                 .padding()
-                                .background(Color.red)
+                                .background(Color.white)
                                 .cornerRadius(25)
                         }
                         Spacer()
                     }
-                    Spacer()
+//                    Spacer()
                 }
                 
                 // Bottom half for user's media library
